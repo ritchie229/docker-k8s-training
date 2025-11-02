@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Values.namespace.appname }}-{{ .Values.namespace.name }}
+  namespace: {{ .Values.namespace.name }}
+spec:
+  rules:
+  - host: myk8sapp-prod.kuber-rocky.netbird.cloud
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ .Values.namespace.appname }}-{{ .Values.namespace.name }}
+            port:
+              number: 80

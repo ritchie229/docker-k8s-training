@@ -1,0 +1,3 @@
+Owner of the project is {{ .Values.owner }}.
+servicename=$(kubectl get service -l "app={{ .Values.appname }}" -o jsonpath="{.items[0].metadata.name}")
+kubectl port-forward service/{{ .Values.appname }} {{ .Values.service.port }}:80 --namespace {{ .Values.namespace }}

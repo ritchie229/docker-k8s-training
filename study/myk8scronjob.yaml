@@ -1,0 +1,28 @@
+apiVersion : batch/v1
+kind: CronJob
+metadata:
+  name: myk8scronjob
+spec:
+  schedule: "*/1 * * * *"
+  startingDeadlineSeconds: 60         #If the job did not start for any reason the cronjob will do it within 60 sec 
+  concurrencyPolicy: Replace            # Allow(default)/Forbid/Replace - a concurrent new job run.
+  successfulJobHistoryLimitt: 2
+  failedJobHistoryLimit: 2
+  suspend: false #default
+  jobTemplate:
+    spec:
+      backoffLimit: 4
+      activeDeadlineSeconds: 240      # in 50 sec job stops, priority over backoffLimit
+      parallelism: 2                  # only if pod can run paralelly
+      completions: 3
+      template:
+        spec:
+          containers:
+          - name : myk8scronjob
+            image: busybox
+            imagePullPolicy: IfNotPresent
+            command: 
+            - /bin/sh
+            - -c
+            - date; echo "CronJob is running"; # sleep 140 or exit $((RANDOM%2))
+          restartPolicy: OnFailure

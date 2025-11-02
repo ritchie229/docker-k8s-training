@@ -1,0 +1,23 @@
+namespace:
+  name: dev
+  appname: myk8sapp
+
+replicaCount: 3
+   
+service:
+  port: 8889
+  targetPort: 80
+  type: LoadBalancer 
+    #  type: NodePort  
+    #  type: ClusterIP
+
+image:
+  repository: ritchie229/k8s_study:myk8sapp
+  containerPort: 80
+
+autoscaling:
+  enabled: true
+  minReplicas: 5
+  maxReplicas: 7
+  targetCPUUtilizationPercentage: 10
+  targetMemoryUtilizationPercentage: 10

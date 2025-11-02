@@ -1,0 +1,22 @@
+apiVersion : apps/v1
+kind: DaemonSet
+metadata:
+  name: myk8sDS
+  labels:
+    owner: Rishat
+    app  : k8s-DS
+spec:
+  selector:
+    matchLabels:
+      type: worker2 
+  template:
+    metadata:
+      labels:
+        type: worker2
+    spec:
+      containers:
+        - name : k8s-DS
+          image: ritchie229/k8s_study:myk8sapp
+          ports:
+            - containerPort: 80
+

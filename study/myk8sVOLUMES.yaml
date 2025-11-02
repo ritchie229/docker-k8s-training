@@ -1,0 +1,88 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: myk8sappdepl
+  labels:
+    image: personal
+    owner: Rishat
+    tier : frontend
+    env  : prod
+    app  : k8s-depl
+spec:
+
+  minReadySeconds: 10   # only in 10 second after deploymtn the pod will get available
+  strategy:             #
+    #type: Recreate      # 1.Means after upgrading all pods will termonate first with Downtime.
+    type: RollingUpdate # 2.Means update will happen smoothly excluding Downtime
+    rollingUpdate:      #
+      maxSurge: 1       # one pod will appear and then ...
+      maxUnavailable: 1 # one pod will be destroyed, and after that again ...
+    
+  selector:
+    matchLabels:
+      project: depl
+
+  template:
+    metadata:
+      labels:
+        project: depl
+    spec:
+      containers:
+        - name : k8scontainerapp1
+          image: ritchie229/k8s_study:myk8sapp
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - mountPath: /var/www/html   #if mounting to an existing path, the existing data will be erased 
+              readOnly: true
+              name: test-volume
+      volumes:
+        - name: test-volume
+          hostPath:
+            path: /data
+            type: Directory
+          
+                
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: myk8sappsrv
+  labels:
+    env: prod
+    owner: Rishat
+spec:
+  selector:
+    project: depl
+  ports:
+    - name: app-listener
+      protocol: TCP
+      port: 8008
+      targetPort: 80
+  type: NodePort #LoadBalancer #ClusterIP
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: myk8sapphpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: myk8sappdepl
+  minReplicas: 3
+  maxReplicas: 4
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 50
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 50

@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.namespace.appname }}-{{ .Values.namespace.name }}
+  namespace: {{ .Values.namespace.name }}
+  labels:
+    app: {{ .Values.namespace.appname }}
+    env: Rishat
+spec:
+  #externalTrafficPolicy: Local
+  #sessionAffinity: ClientIP
+
+  selector:
+    project: {{ .Values.namespace.appname }}
+  ports:    
+    - name: {{ .Values.namespace.appname }}-listener
+      protocol: TCP
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.targetPort }}
+        #      nodePort: 30000
+  type: {{ .Values.service.type }}
+
+

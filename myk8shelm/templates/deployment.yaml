@@ -1,0 +1,36 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.namespace.appname }}-{{ .Values.namespace.name }}
+  namespace: {{ .Values.namespace.name }}
+  labels:
+    owner: {{ .Values.owner }}
+    app  : {{ .Values.namespace.appname }}
+spec:
+  #replicas: {{ .Values.replicaCount }}
+  #minReadySeconds: 10   # only in 10 second after deploymtn the pod will get available
+  #strategy:             #
+    #type: Recreate      # 1.Means after upgrading all pods will termonate first with Downtime.
+    #type: RollingUpdate # 2.Means update will happen smoothly excluding Downtime
+    #rollingUpdate:      #      
+      #maxSurge: 1       # one pod will appear and then ...
+      #maxUnavailable: 1 # one pod will be destroyed, and after that again ...
+    #type: RollingUpdate # Means update will happen smoothly excluding Downtime
+    #type: Recreate      # Means after upgrading all pods will termonate first with Downtime.
+
+  selector:
+    matchLabels:
+      project: {{ .Values.namespace.appname }}
+  template:
+    metadata:
+      labels:
+        project: {{ .Values.namespace.appname }}
+    spec:
+      containers:
+        - name : {{ .Values.namespace.appname }}
+          image: {{ .Values.image.repository }}
+          #command: ["python3","-u","app.py"] #Dockerfile ENTRYPOINT instruction          
+          #args: ["arg1","arg2","arg3"]   # Dockerfile CMD instruction
+          ports:
+            - containerPort: {{ .Values.image.containerPort }}
+

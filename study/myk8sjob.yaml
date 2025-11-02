@@ -1,0 +1,18 @@
+apiVersion : batch/v1
+kind: Job
+metadata:
+  name: myk8sjob
+spec:
+  # parallelism: 2            # only if pod can run paralelly
+  # completions: 3
+  # backoffLimit: 3
+  # activeDeadlineseconds: 50 # in 50 sec job stops, priority over backoffLimit.
+  template:
+    spec:
+      containers:
+        - name : myk8sjob
+          image: perl
+          command: ["perl", "-Mbignum=bpi", "-wle","print bpi(2000)"] #Dockerfile ENTRYPOINT instruction
+          #args: ["arg1","arg2","arg3"]   # Dockerfile CMD instruction
+          restartPolicy: Never
+          # restartPolicy: OnFailure #only if pod exits with error

@@ -1,0 +1,18 @@
+name: myk8scomposeapp
+services:
+  myk8scomposeapp:
+    #image: php:7.2-apache
+    image: ritchie229/k8s_study:myk8sapp
+    pull_policy: missing
+    expose:
+      - "80"
+    build:
+      context: .
+    container_name: myk8scomposeapp
+    stdin_open: true
+    tty: true
+    ports:
+      - "8888:80"
+    volumes:
+      - .:/var/www/html/
+

@@ -1,0 +1,21 @@
+namespace:
+  name: prod
+  appname: myk8sapp
+
+replicaCount: 3
+   
+service:
+  port: 8888
+  targetPort: 80
+  type: NodePort #LoadBalancer 
+
+image:
+  repository: ritchie229/ritchie_docker:net_containers
+  containerPort: 80
+
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 6
+  targetCPUUtilizationPercentage: 50
+  iitargetMemoryUtilizationPercentage: 50

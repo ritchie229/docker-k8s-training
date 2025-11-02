@@ -1,0 +1,30 @@
+apiVersion : v1
+kind: Pod
+metadata:
+  name: myk8spodapp
+  labels:
+    image: personal
+    owner: Rishat
+    tier : frontend
+    env  : prod
+spec:
+  containers:
+    - name : k8scontainerapp1
+      image: ritchie229/k8s_study:myk8sapp
+      env: 
+      - name: namespace
+        valueFrom:
+          configMapKeyRef:
+            name: namespace
+            key: NAMESPACE
+
+
+
+
+      ports:
+        - containerPort: 80
+    - name : k8scontainerapp2
+      image: tomcat:8.5.38
+      ports:
+        - containerPort: 8080
+
