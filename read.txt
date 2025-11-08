@@ -391,4 +391,48 @@ stage('Open Ports') {
     }
 }
 --------------------------------------------
+IDEA of a script for custom use  
+--------------------------------------------
+
+==============================
+===========ARGO=CD============
+==============================
+
+1. Start minikube cluster with a few nodes (use taskfile0
+2. Add your K8S and help project to github repository
+3. Install agrgo cd onto minikube cluster
+# kubectl create namespace argocd
+# kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+Service responsible for web ui - service/argocd-server, so:
+# kubectl edit service/argocd-server -n argocd   - change the service type to a NodePort? so that easier to use web ui.
+
+Use the bash script create drecetly to forward the NodePort to 30000. Connect to your web ui from netbird.
+
+* Pods will not start, as containers not created due to bad network causing proper argo cd images not pulled.
+In this case pull the images to your host machine, tag them properly, push to your own registry. Then edit the containers section of argo deployment yaml. The best option is to download instal.yaml and modify it properly at the very beginning.
+
+Read https://gitverse.ru/docs/artifactory/registry-mirrors/dh-mirror/
+
+# docker pull quay.io/argoproj/argocd:v3.1.9
+# docker pull ghcr.io/dexidp/dex:v2.43.0
+# docker pull public.ecr.aws/docker/library/redis:7.2.11-alpine
+
+[root@Kuber-Rocky myk8shelm]# docker tag quay.io/argoproj/argocd:v3.1.9 192.168.0.119:5050/ritchie/docker_registry:argocd.v3.1.9
+[root@Kuber-Rocky myk8shelm]# docker tag ghcr.io/dexidp/dex:v2.43.0 192.168.0.119:5050/ritchie/docker_registry:dex.v2.43.0
+[root@Kuber-Rocky myk8shelm]# docker tag public.ecr.aws/docker/library/redis:7.2.11-alpine 192.168.0.119:5050/ritchie/docker_registry:redis.7.2.11-alpine
+
+
+
+For "http: server gave HTTP response to HTTPS client" error while pushing to local GitLab Reg, add "insecure-registries": ["192.168.0.119:5050"] to /etc/docker/daemon.json file
+|------SEE------|
+ `-----____-----`   ----------------------------------------------
+	{ 
+    		"registry-mirrors" : [ "https://dockerhub.timeweb.cloud", "https://huecker.io", "https://mirror.gcr.io", "https://c.163.com", "https://registry.docker-cn.com", "https://daocloud.io" ],
+    		"insecure-registries": ["192.168.0.119:5050"]
+	}
+
+-------------------------------------------------------------------
+
+
 
