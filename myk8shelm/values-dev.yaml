@@ -2,7 +2,7 @@ namespace:
   name: dev
   appname: myk8sapp
 
-replicaCount: 3
+replicaCount: 1
    
 service:
   port: 8889
@@ -17,7 +17,7 @@ image:
 
 autoscaling:
   enabled: true
-  minReplicas: 5
-  maxReplicas: 7
-  targetCPUUtilizationPercentage: 10
-  targetMemoryUtilizationPercentage: 10
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 70
