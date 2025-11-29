@@ -6,7 +6,7 @@
 
 #read -p "Enter NS: " namespace
 
-sysctl -w net.ipv4.ip_forward=0
+#sysctl -w net.ipv4.ip_forward=0
 #sysctl -w net.ipv4.conf.all.route_localnet=0
 
 namespace=$(kubectl get ns | grep -oE '\b(prod|dev)\b' | head -n1)
