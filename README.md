@@ -169,9 +169,14 @@ subjects:
 kubectl -n kubernetes-dashboard port-forward svc/kubernetes-dashboard-kong-proxy 8443:443
 kubectl proxy
 ```
- kubectl -n kubernetes-dashboard create token admin-user
+Token creation for web authentication
+```bash
+kubectl -n kubernetes-dashboard create token admin-user
+```
+A token example, copy-paste this once on web as requested
+```bash
 eyJhbGciOiJSUzI1NiIsImtpZCI6IkpndmR2eF9CaVI4enRPek14WGZ1T0JmU0lLQkE2bm1sRWcyYWI5bC1BbG8ifQ.eyJhdWQiOlsiaHR0cHM6Ly9rdWJlcm5ldGVzLmRlZmF1bHQuc3ZjLmNsdXN0ZXIubG9jYWwiXSwiZXhwIjoxNzYwOTk3NzcwLCJpYXQiOjE3NjA5OTQxNzAsImlzcyI6Imh0dHBzOi8va3ViZXJuZXRlcy5kZWZhdWx0LnN2Yy5jbHVzdGVyLmxvY2FsIiwianRpIjoiOWE0ODI2OTgtYjRjNS00MWMxLTk5MDktODU3NjE3NWM4M2RhIiwia3ViZXJuZXRlcy5pbyI6eyJuYW1lc3BhY2UiOiJrdWJlcm5ldGVzLWRhc2hib2FyZCIsInNlcnZpY2VhY2NvdW50Ijp7Im5hbWUiOiJhZG1pbi11c2VyIiwidWlkIjoiMmZiZDA5OGQtNmY3Yy00MjE5LTg0ZDItMTk1NjUyNzkxNjAyIn19LCJuYmYiOjE3NjA5OTQxNzAsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDprdWJlcm5ldGVzLWRhc2hib2FyZDphZG1pbi11c2VyIn0.DnzzMX5ThTaZwi6kt_RZg5ek91uBiZXDTbGdw4rnjZmviEOluxP7vijQIc3b9pLkJAK0f9zNSI42TDIUiqAvlccmTjdBeirRjgvXE-dlFILpxwqYxQWemzki2EzyCuPfmc_ithsY9MSGOH65U2YJfMso2qNDg6NND6iUWamtPjVzGT7a-FxbCuZ9uQXeR4CcQ6m_501Y59DuXOIykSQL3tL1VsyGHN0kiLOECu-VnItAG-Ji0fo_Y_uM8R3CzvH6tjWfqz4eqgNi1JcILjpBNferoHmm7NGQKtJka0qS5wRGaKHK7YT6L5XsjzlflZsTTnaskYOvMZJZR_TtUCXPlA
-===============================================================================================================================
+```
 
 
 
