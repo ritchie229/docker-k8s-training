@@ -44,7 +44,7 @@ tasks:
 
   mini:1-start-minikube-ingress-tunnel:
     cmds:
-      - minikube start --nodes=3 --driver=docker --cpus=2 --memory=4096 --addons=[ingress] --force --profile minitunnel
+      - minikube start --nodes=3 --driver=docker --cpus=2 --memory=4096 --addons=[ingress] --force
       - minikube addons enable ingress
       - kubectl label node minikube-m02 type=worker node-role.kubernetes.io/worker=
       - kubectl label node minikube-m03 type=worker node-role.kubernetes.io/worker=
@@ -105,7 +105,7 @@ tasks:
 
   helm:1-start-minikube:
     cmds:
-      - minikube start --nodes=3 --driver=docker --cpus=2 --memory=4096 --force --profile minihelm
+      - minikube start --nodes=3 --driver=docker --cpus=2 --memory=4096 --force
       - kubectl label node minikube-m02 type=worker node-role.kubernetes.io/worker=
       - kubectl label node minikube-m03 type=worker node-role.kubernetes.io/worker=
     desc: "Start minikube correctly adding correct labels"

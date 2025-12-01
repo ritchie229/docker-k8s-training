@@ -476,4 +476,12 @@ For "http: server gave HTTP response to HTTPS client" error while pushing to loc
 -------------------------------------------------------------------
 
 
+argocd app create dockerhub-lab \
+  --repo https://github.com/ritchie229/docker-k8s-training.git \
+  --path myk8shelm \
+  --dest-server https://kubernetes.default.svc \
+  --dest-namespace dev \   # или prod, зависит от values
+  --values values-dev.yaml \
+  --sync-policy automated \
+  --sync-option CreateNamespace=true
 

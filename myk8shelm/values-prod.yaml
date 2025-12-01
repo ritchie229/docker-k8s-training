@@ -8,8 +8,8 @@ service:
   port: 8888
   targetPort: 80
     #type: ClusterIP 
-    #type: NodePort 
-  type: LoadBalancer 
+  type: NodePort 
+    #type: LoadBalancer 
 
 image:
   repository: ritchie229/ritchie_docker:net_containers
