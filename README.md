@@ -1,4 +1,6 @@
-=========================================================
+# DOCKER-K8S-HELM-ARGOCD TRAINING
+
+## BASIC STATEMENTS
 
 For managing containerized apps.
 Automation of product (app) Deployment, Scaling and Management.
@@ -8,30 +10,29 @@ K8s objects:
 - Deployments
 - Ingress
 
-
-Google product, Golang.
-
+A Google product, Golang.
 
 
---------
-SERVICES - availability of the app
---------
+## SERVICES - availability of the app
+
 1. ClusterIP    > Default, IP available only withing the cluster
 2. NodePort     > A definite port on all k8s worker nodes
 3. ExternalName > DNS CNAME Record
 4. LoadBalancer > Only for Cloud based clusters > Domain names can be assigned > TOO COSTLY
 
---------
-INGRESS - works with ClusterIP (eg.minikube ip) - stands between one Cloud load balancer and the Clusters. Ingress rules redirect the external query to the correct apps.
--------- 
---Comparison of Ingress Controllers with links to repos--
+
+**INGRESS** - works with ClusterIP (eg.minikube ip) - stands between one Cloud load balancer and the Clusters. Ingress rules redirect the external query to the correct apps.
+ 
+Comparison of Ingress Controllers with links to repos--
 https://docs.google.com/spreadsheets/d/191WWNpjJ2za6-nbG4ZoUMXMpUK8KlCIosvQB0f-oq3k/edit?pli=1&gid=907731238#gid=907731238
 
+```bash
 kubectl apply -f https://projectcontour.io/quickstart/contour.yaml
 kubectl get svc -n projectcontour
+```
 
 app_ingress.yaml
-----------------
+```yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -65,30 +66,32 @@ spec:
                 name: app-service-v2    #the exact name of the app servicename
                 port:
                   number: 5000          #port indicated in the app service
+```
 
-
-
+```bash
 kubectl get ingress
 kubectl describe ingress	 > better view showing the domain name (address) -> domain name (host) and the backend path
+```
+> [!TIP]
+> Two types of defining: 1. the host; www.notebook.local -> svc:port 2. the path:  www.notebook.local/v1 -> svc.port 
+>
+> edit: /etc/hosts
+> add: <IP addr> domainname
+> url: notebook.local
 
-Two types of defining: 1. the host; www.notebook.local -> svc:port 2. the path:  www.notebook.local/v1 -> svc.port 
-
-edit: /etc/hosts
-add: <IP addr> domainname
-url: notebook.local
-
-
+```bash
 kubectl delete ns projectcontour > removes ingress entirely
+```
 
-ADDITIONALLY:
+### ADDITIONALLY:
+```bash
 minilube addons list
 minikube addons enable ingress
+```
 
+## KUBECTL
 
--------
-KUBECTL
--------
-
+```bash
 kubectl get pods                                        > Show all pods
 kubectl run <pod_name> --image=<image:tag> --port=80    > Create a pod from Docker image and expose port 80
 kubectl port-forward <pod_name> 8888:80                 > Forwad container port 80 to host port 8888
@@ -99,7 +102,8 @@ kubectl exec <pod_name> date                            > Run date command from 
 kubectl exec -it <pod_name> bash                        > Run bash from the pod
 kubectl apply -f <manifest.yaml>                        > Create k8s objects from manifest
 kubectl delete -f <manifest.yaml>                       > Delete k8s objects described in manifest
-
+```
+```bash
 kubectl get deployments                                                                 > Show all deployments
 kubectl get rs                                                                          > Show all replica sets
 kubectl create deployment <deployment_name> --iamge <image:tag>                         > Create a deployment from a Docker image
@@ -114,39 +118,38 @@ kubectl rollout undo deployment/<deployment_name>                               
 kubectl rollout status deployment/<deployment_name> --to-revision=2                     > Checkout to a defined vesion
 kubectl rollout restart deployment/<deployment_name>                                    > Redeploy the current version
 kubectl delete deployments <deployment_name>                                            > Destroy the deployment
-
+```
+```bash
 kubectl expose deployment <deployment_name> --type=clusterIP --port 80                  > Creates a service with type ClusterIP (NodePort, ExternalName, LoadBalancer)
 kubectl get services (svc)                                                              > Shows all services
 kubectl delete service <deployment_name>                                                > Deletes the created service
 kubectl describe nodes | grep ExternalIP                                                > Greps External IPs from the nodes descriptions
+```
+
+## Clusters
+
+```bash
+kubectl config current-context
+kubectl config get-contexts
+kubectl config use-context minikube / kind-kind / aws etc.
+```
 
 
---------
-Clusters
---------
+## Dashboard
 
- kubectl config current-context
- kubectl config get-contexts
- kubectl config use-context minikube / kind-kind / aws etc.
-
-
----------
-Dashboard
----------
-
+```bash
 helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard/
 helm upgrade --install kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard --create-namespace --namespace kubernetes-dashboard
----------------------------------
-
+```
+```bash
 vim sa-dash.yaml
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: admin-user
   namespace: kubernetes-dashboard
-
----
-
+```
+```yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
@@ -160,144 +163,68 @@ subjects:
   name: admin-user
   namespace: kubernetes-dashboard
 :wq
+```
 
------------------------------ 
-
+```bash
 kubectl -n kubernetes-dashboard port-forward svc/kubernetes-dashboard-kong-proxy 8443:443
 kubectl proxy
-
+```
  kubectl -n kubernetes-dashboard create token admin-user
 eyJhbGciOiJSUzI1NiIsImtpZCI6IkpndmR2eF9CaVI4enRPek14WGZ1T0JmU0lLQkE2bm1sRWcyYWI5bC1BbG8ifQ.eyJhdWQiOlsiaHR0cHM6Ly9rdWJlcm5ldGVzLmRlZmF1bHQuc3ZjLmNsdXN0ZXIubG9jYWwiXSwiZXhwIjoxNzYwOTk3NzcwLCJpYXQiOjE3NjA5OTQxNzAsImlzcyI6Imh0dHBzOi8va3ViZXJuZXRlcy5kZWZhdWx0LnN2Yy5jbHVzdGVyLmxvY2FsIiwianRpIjoiOWE0ODI2OTgtYjRjNS00MWMxLTk5MDktODU3NjE3NWM4M2RhIiwia3ViZXJuZXRlcy5pbyI6eyJuYW1lc3BhY2UiOiJrdWJlcm5ldGVzLWRhc2hib2FyZCIsInNlcnZpY2VhY2NvdW50Ijp7Im5hbWUiOiJhZG1pbi11c2VyIiwidWlkIjoiMmZiZDA5OGQtNmY3Yy00MjE5LTg0ZDItMTk1NjUyNzkxNjAyIn19LCJuYmYiOjE3NjA5OTQxNzAsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDprdWJlcm5ldGVzLWRhc2hib2FyZDphZG1pbi11c2VyIn0.DnzzMX5ThTaZwi6kt_RZg5ek91uBiZXDTbGdw4rnjZmviEOluxP7vijQIc3b9pLkJAK0f9zNSI42TDIUiqAvlccmTjdBeirRjgvXE-dlFILpxwqYxQWemzki2EzyCuPfmc_ithsY9MSGOH65U2YJfMso2qNDg6NND6iUWamtPjVzGT7a-FxbCuZ9uQXeR4CcQ6m_501Y59DuXOIykSQL3tL1VsyGHN0kiLOECu-VnItAG-Ji0fo_Y_uM8R3CzvH6tjWfqz4eqgNi1JcILjpBNferoHmm7NGQKtJka0qS5wRGaKHK7YT6L5XsjzlflZsTTnaskYOvMZJZR_TtUCXPlA
 ===============================================================================================================================
 
 
 
+## EXTERNAL ACCESS
 
-
-----------------
-[LIVENESS PROBE]
-----------------
-
-deployment.yaml -> spec.template.spec.containers.args:
-- /bin/sh
-- -c
-- touch /tmp/healthy; sleep 30; rm -rf /tmp/healthy; sleep 600
-deployment.yaml -> spec.template.spec.containers.livenessProbe.exec.command:
-- cat
-- /tmp/health
-deployment.yaml -> spec.template.spec.containers.livenessProbe:
-  initialDelaySeconds: 5
-  periodSeconds: 5
-  timeoutSeconds: 1
-  successThreshold: 1
-  failureThreshold: 3 #after three attempts the pod will restart
-
-------------------tcpcheck---
-
-instead of exec...
-deployment.yaml -> spec.template.spec.containers.livenessProbe.tcpSocket.port: 8001
-
--------------------httpget---
-
-!!! image should contain following code (/server.py):
-from http.server import HTTPServer, BaseHTTPRequestHandler
-import socket
-class SimpleHTTPRequestHandler (BaseHTTPRequestHandler):
-	def do_GET(self):
-		if self.path == "/healthcheck":
-			if count <= 5:
-				self.send_response(200)
-				self.send_header ("Custom-header-for-kuber-app", "Awesome" )
-				self.end_headers
-				self.wfile write(b'OK')
-			else:
-				self.send_response(500)
-				self.end_headers()
-				self.wfile write(b'ERROR')
-		else:
-			self.send_response(200)
-			self.end_headers()
-			self.wfile.write(b'Hello world from hostname: ' + socket.gethostname().encode())
-count = 1
-SERVER_PORT = 8000
-httpd = HTTPServer (('0.0.0.0'SERVER_PORT), SimpleHTTPRequestHandler)
-print('Listening on port %s ...' % SERVER_PORT)
-while 'true':
-	httpd.handle_request()
-count += 1
-EOF
-
-deployment.yaml -> spec.template.spec.containers:
-  image: bakavets/kuber:v1.0-unhealthy
-  ports: containerPort: 8000
-
-deployment.yaml -> spec.template.spec.containers.livenessProbe.httpGet:
-  path: /healthcheck
-  port: 8000
-  - name: Host
-    value: kuber-unhealthy.motebook.local
-deployment.yaml -> spec.template.spec.containers.livenessProbe:
-  initialDelaySeconds: 5
-  periodSeconds: 5
-
----------------
-READINESS PROBE
----------------
-
-The configs are the same, but it does not make the pod deleted. readiness probe amkes the http gueries go only on healthy pods.
-
-
-USEFULL
-# while true; do curl <URL>; sleep 2; echo; done
-# kubectl get <resource> --watch
-# curl -v -H "Host: www.notebook.local/v1" http://<IP>:<PORT>
-
-
-=====================
-===EXTERNAL=ACCESS===
-=====================
 
 As local k8s apps are running in Docker containers within pods which are in local cluster nodes (minikube/kind) and are resiously isolated from not only the Internet, but from the local area network, except the machine running this local k8s cluster.
 The only way to access such kind of apps from outside as far as I figured out is deining the service type: NodePort with a concrete port within the allowed zone, and organizing IP forwarding on the host machine.
 IP Tables config example below:
 
-
-# sysctl net.ipv4.ip_forward=1
+```bash
+sysctl net.ipv4.ip_forward=1
 --or--
 add 'net.ipv4.ip_forward = 1' in /etc/sysctl.conf
-
-# iptables -t nat -A PREROUTING -p tcp --dport <SOURCE_PORT> -j DNAT --to-destination <DESTINATION_IP>:<DESTINATION_PORT>
-
-<SOURCE_PORT> - any port free on the host machine, a user will use it to access the app. Best option is to use the same port as DESTINATION_PORT.
-<DESTINATION_IP> - minikube ip, i.e. the cluster's IP address
-<DESTINATION_PORT> - a port you specify as a NodePort in service.yaml
+```
+```bash
+iptables -t nat -A PREROUTING -p tcp --dport <SOURCE_PORT> -j DNAT --to-destination <DESTINATION_IP>:<DESTINATION_PORT>
+```
+> [!NOTE]
+> <SOURCE_PORT> - any port free on the host machine, a user will use it to access the app. Best option is to use the same port as DESTINATION_PORT.
+> <DESTINATION_IP> - minikube ip, i.e. the cluster's IP address
+> <DESTINATION_PORT> - a port you specify as a NodePort in service.yaml
 
 
 Optionally in case your cluster is supposed to be sending responses back thru your machine and the responses are supposed to look like as if originated from your machine, a MASQUERADE rule in the POSTROUTING chain is needed to be added. This option is not my case.
-# iptables -t nat -A POSTROUTING -j MASQUERADE"
-
+```bash
+iptables -t nat -A POSTROUTING -j MASQUERADE"
+```
 
 To make the rules persistent 
 on Debian install "iptables-persistent" and do:
-# netfilter-persistent save
+```bash
+netfilter-persistent save
+```
 on centos/rhel install "iptables-services" enable the service and save the rules as follows:
-# systemctl enable iptables
-# iptables-save > /etc/sysconfig/iptables
+```bash
+systemctl enable iptables
+iptables-save > /etc/sysconfig/iptables
+```
+---
+
+> [!IMPORTANT]
+> 
+> Firewall Rules: 
+> Ensure that your firewall (ufw, firewalld) allows incoming connections on the <SOURCE_PORT> and outgoing connections to the <DESTINATION_IP>:<DESTINATION_PORT>.
+> Security: 
+> Be mindful of the security implications when forwarding ports, especially to internal systems.
+> Troubleshooting: 
+> Use iptables -L -v -n -t nat to view your NAT rules and dmesg or journalctl -xe to check for any related errors.
 
 
--------------------------------
-!!! Important:
+## FOR THE FUTURE [ automation ]
 
-Firewall Rules: 
-Ensure that your firewall (ufw, firewalld) allows incoming connections on the <SOURCE_PORT> and outgoing connections to the <DESTINATION_IP>:<DESTINATION_PORT>.
-Security: 
-Be mindful of the security implications when forwarding ports, especially to internal systems.
-Troubleshooting: 
-Use iptables -L -v -n -t nat to view your NAT rules and dmesg or journalctl -xe to check for any related errors.
-====================================
-====================================
-
-FOR THE FUTURE [ automation ]
 it looks reasonable to create a scrypt figuring out the IP address of the cluster, the nodeport not specified manually, performimg IPTABLES configuring applying the above data, in case the deployment is deleted, removing the rules added.
 
 
@@ -309,7 +236,7 @@ step2: minikube ip
 step3: the script itself
 
 -----open_port_30000.sh----
-
+```sh
 #!/bin/bash
 # Docker accep-user rule inserted if not exists
 iptables -C DOCKER-USER -i ens160 -m conntrack --ctstate DNAT -j ACCEPT 2>/dev/null || \
@@ -338,11 +265,11 @@ iptables -L DOCKER-USER -nv --line-numbers
 iptables -t nat -L PREROUTING -n --line-numbers
 #iptables -t nat -L OUTPUT -n --line-numbers
 #iptables -t nat -L POSTROUTING -n --line-numbers
-
+```
 ---------------------------
 
 -----close_port_30000.sh----
-
+```sh
 #!/bin/bash
 #LOCKING IP FORWARDING, better leave as it is 
 #iptables -C DOCKER-USER -i ens160 -m conntrack --ctstate DNAT -j ACCEPT 2>/dev/null && \
@@ -372,116 +299,95 @@ echo "==============$CLUSTER_IP:$PORT CLOSED!!!=================="
 iptables -t nat -L PREROUTING -n --line-numbers
 #iptables -t nat -L OUTPUT -n --line-numbers
 #iptables -t nat -L POSTROUTING -n --line-numbers
+```
+---
+> [!NOTE]
+> Annotation:
+> Every time after helm install run open_port_30000.sh, this will read the cluster's IP address and the NodePort assigned to the app, and will configure IP Forwarding to the app thru the host machine for external access thru port 30000.
+> Every time before helm uninstall run close_port_30000.sh to remove the rule so that for new install with new port it leaves room.
+> Everytime before you do helm upgrade run close_port_30000.sh, and after upgrading run open_port_30000.sh again. so that new configg are applyed in IP Tables.
 
-----------------------------
+```bash
+helm install myk8sapp . --values values-prod.yaml
+open_port_30000.sh
 
-Annotation:
-Every time after helm install run open_port_30000.sh, this will read the cluster's IP address and the NodePort assigned to the app, and will configure IP Forwarding to the app thru the host machine for external access thru port 30000.
-Every time before helm uninstall run close_port_30000.sh to remove the rule so that for new install with new port it leaves room.
-Everytime before you do helm upgrade run close_port_30000.sh, and after upgrading run open_port_30000.sh again. so that new configg are applyed in IP Tables.
-
-#helm install myk8sapp . --values values-prod.yaml
-#open_port_30000.sh
-
-#close_port_30000.sh
-#helm upgrade myk8sapp . --values values-dev.yaml
-#open_port_30000.sh
-
-#close_port_30000.sh
-#helm uninstall myk8sapp
-
-#iptables -t nat -L PREROUTING -n --line-numbers
-
-
--------------------------------------------
-Note:
-In the script the command:
-namespace=$(kubectl get ns | grep -oE '\b(prod|dev)\b' | head -n1)
-
-can be replace with the following:
-if kubectl get ns | grep -q '\bprod\b'; then
-    namespace="prod"
-elif kubectl get ns | grep -q '\bdev\b'; then
-    namespace="dev"
-else
-    echo "❌ Namespace neither 'prod' nor 'dev' found!"
-    exit 1
-fi
-echo "✅ Selected namespace: $namespace"
-
---------------------------------------------
-
-
-Note:
-Helm trigger can be used as following:
-#!/bin/bash
-set -e
-
+close_port_30000.sh
 helm upgrade myk8sapp . --values values-dev.yaml
-if [ $? -eq 0 ]; then
-    echo "Helm upgrade successful, applying iptables..."
-    bash ./open_ports.sh
-fi
+open_port_30000.sh
 
---------------------------------------------
+close_port_30000.sh
+helm uninstall myk8sapp
+
+iptables -t nat -L PREROUTING -n --line-numbers
+```
+
+> [!NOTE]
+> In the script the command:
+> _namespace=$(kubectl get ns | grep -oE '\b(prod|dev)\b' | head -n1)_
+> can be replace with the following:
+> _if kubectl get ns | grep -q '\bprod\b'; then
+>    namespace="prod"
+> elif kubectl get ns | grep -q '\bdev\b'; then
+>    namespace="dev"
+> else
+>    echo "❌ Namespace neither 'prod' nor 'dev' found!"
+>    exit 1
+> fi
+> echo "✅ Selected namespace: $namespace"_
+
+---
+
+
+> [!NOTE]
+> Helm trigger can be used as following:
+> _#!/bin/bash
+> set -e
+> 
+> helm upgrade myk8sapp . --values values-dev.yaml
+> if [ $? -eq 0 ]; then
+>     echo "Helm upgrade successful, applying iptables..."
+>     bash ./open_ports.sh
+> fi_
+
+---
 
 WHEN DEPLOYING the CI/CD pipeline you can add the open_port_30000.sh to the step after the upgrade step.
+```sh
 stage('Open Ports') {
     steps {
         sh 'bash open_ports.sh'
     }
 }
+```
 --------------------------------------------
-IDEA of a script for custom use  
+## IDEA of a script for custom use  
 --------------------------------------------
 
-==============================
-===========ARGO=CD============
-==============================
 
-1. Start minikube cluster with a few nodes (use taskfile0
-2. Add your K8S and help project to github repository
-3. Install agrgo cd onto minikube cluster
-# kubectl create namespace argocd
-# kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-
-Service responsible for web ui - service/argocd-server, so:
-# kubectl edit service/argocd-server -n argocd   - change the service type to a NodePort? so that easier to use web ui.
-
-Use the bash script create drecetly to forward the NodePort to 30000. Connect to your web ui from netbird.
-
-* Pods will not start, as containers not created due to bad network causing proper argo cd images not pulled.
-In this case pull the images to your host machine, tag them properly, push to your own registry. Then edit the containers section of argo deployment yaml. The best option is to download instal.yaml and modify it properly at the very beginning.
-
-Read https://gitverse.ru/docs/artifactory/registry-mirrors/dh-mirror/
-
-# docker pull quay.io/argoproj/argocd:v3.1.9
-# docker pull ghcr.io/dexidp/dex:v2.43.0
-# docker pull public.ecr.aws/docker/library/redis:7.2.11-alpine
-
-[root@Kuber-Rocky myk8shelm]# docker tag quay.io/argoproj/argocd:v3.1.9 192.168.0.119:5050/ritchie/docker_registry:argocd.v3.1.9
-[root@Kuber-Rocky myk8shelm]# docker tag ghcr.io/dexidp/dex:v2.43.0 192.168.0.119:5050/ritchie/docker_registry:dex.v2.43.0
-[root@Kuber-Rocky myk8shelm]# docker tag public.ecr.aws/docker/library/redis:7.2.11-alpine 192.168.0.119:5050/ritchie/docker_registry:redis.7.2.11-alpine
-
-
-
-For "http: server gave HTTP response to HTTPS client" error while pushing to local GitLab Reg, add "insecure-registries": ["192.168.0.119:5050"] to /etc/docker/daemon.json file
-|------SEE------|
- `-----____-----`   ----------------------------------------------
-	{ 
-    		"registry-mirrors" : [ "https://dockerhub.timeweb.cloud", "https://huecker.io", "https://mirror.gcr.io", "https://c.163.com", "https://registry.docker-cn.com", "https://daocloud.io" ],
-    		"insecure-registries": ["192.168.0.119:5050"]
-	}
-
--------------------------------------------------------------------
-
-
-argocd app create dockerhub-lab \
+## ARGOCD
+### RUN your app using argocd cli
+```bash
+argocd app create dockerhub-lab-dev
   --repo https://github.com/ritchie229/docker-k8s-training.git \
   --path myk8shelm \
   --dest-server https://kubernetes.default.svc \
-  --dest-namespace dev \   # или prod, зависит от values
+  --dest-namespace dev \  
   --values values-dev.yaml \
   --sync-policy automated \
   --sync-option CreateNamespace=true
+```
+```bash
+argocd app create dockerhub-prod
+  --repo https://github.com/ritchie229/docker-k8s-training.git \
+  --path myk8shelm \
+  --dest-server https://kubernetes.default.svc \
+  --dest-namespace prod \   #in my case I can drop this as deployment itself the correct namespace
+  --values values-prod.yaml \
+  --sync-policy automated \
+  --sync-option CreateNamespace=true
+```
 
+### Removing the app
+```bash
+argocd app delete <APP_NAME>
+```
