@@ -234,13 +234,43 @@ it looks reasonable to create a scrypt figuring out the IP address of the cluste
 
 
 step1: getting the NodePort
+```bash
 kubectl describe svc -n dev | grep NodePort | awk '{print $3}' | awk -F'/' '{print $1}'
-
+```
+#### UPD
+Some other way to get Nodeport easily
+```bash
+kubectl get svc -n namespace SERVICE_NAME -o jsonpath='{.spec.ports[0].nodePort}'
+```
+```bash
+PORT1=$(kubectl get svc -n namespace SERVICE_NAME -o jsonpath='{.spec.ports[0].nodePort}')
+echo "$PORT1"
+```
+```bash
+read PORT1 PORT2 <<< $(kubectl get svc -n namespace SERVICE_NAME -o jsonpath='{.spec.ports[*].nodePort}')
+echo "PORT1=$PORT1"
+echo "PORT2=$PORT2"
+```
+```bash
+#First port
+kubectl describe svc -n namespace SERVICE_NAME \
+  | grep NodePort \
+  | awk 'NR==1{print $3}' \
+  | cut -d/ -f1
+#second port
+kubectl describe svc -n namespace SERVICE_NAME \
+  | grep NodePort \
+  | awk 'NR==2{print $3}' \
+  | cut -d/ -f1
+```
 step2: minikube ip
-
+```minikube ip (--profile <profilename>)
+```
 step3: the script itself
+```bash
+./open_port.sh
+```
 
------open_port_30000.sh----
 ```sh
 #!/bin/bash
 # Docker accep-user rule inserted if not exists
@@ -272,8 +302,9 @@ iptables -t nat -L PREROUTING -n --line-numbers
 #iptables -t nat -L POSTROUTING -n --line-numbers
 ```
 ---------------------------
-
------close_port_30000.sh----
+```bash
+./close_port.sh
+```
 ```sh
 #!/bin/bash
 #LOCKING IP FORWARDING, better leave as it is 
